@@ -84,8 +84,8 @@ test('holdings and watchlist quote targets are normalized and deduplicated', () 
   );
   assert.deepEqual(rows, [
     {exchange:'NSE',symbol:'DEMOETF'},
-    {exchange:'NSE',symbol:'DEMOTECH'},
     {exchange:'NSE',symbol:'DEMOPHARMA'},
+    {exchange:'NSE',symbol:'DEMOTECH'},
   ]);
 });
 
