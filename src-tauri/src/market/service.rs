@@ -18,8 +18,8 @@ use crate::{
 };
 
 use super::{
-    FreshnessPolicy, MarketDataError, MarketDataProvider, QuoteFreshness, RefreshReport,
-    YahooDelayedProvider,
+    FallbackMarketDataProvider, FreshnessPolicy, MarketDataError, MarketDataProvider,
+    QuoteFreshness, RefreshReport, UpstoxAnalyticsProvider, YahooDelayedProvider,
 };
 
 #[derive(Clone)]
@@ -39,6 +39,22 @@ impl MarketDataService {
     ) -> Result<Self, MarketDataError> {
         let settings = settings.normalized();
         let provider: Arc<dyn MarketDataProvider> = match settings.provider.as_str() {
+            "auto" => {
+                let yahoo: Arc<dyn MarketDataProvider> =
+                    Arc::new(YahooDelayedProvider::new(settings.request_timeout_seconds)?);
+                if UpstoxAnalyticsProvider::token_configured() {
+                    let upstox: Arc<dyn MarketDataProvider> =
+                        Arc::new(UpstoxAnalyticsProvider::from_env(
+                            settings.request_timeout_seconds,
+                        )?);
+                    Arc::new(FallbackMarketDataProvider::new(upstox, yahoo))
+                } else {
+                    yahoo
+                }
+            }
+            "upstox_analytics" => Arc::new(UpstoxAnalyticsProvider::from_env(
+                settings.request_timeout_seconds,
+            )?),
             "yahoo_delayed" => {
                 Arc::new(YahooDelayedProvider::new(settings.request_timeout_seconds)?)
             }
