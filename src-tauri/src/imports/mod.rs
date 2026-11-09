@@ -227,7 +227,8 @@ mod tests {
 
     #[test]
     fn holdings_conversion_uses_stable_external_refs() {
-        let input = "exchange,symbol,quantity,average_price,invested_amount\nNSE,DEMOETF,3,100.00,300.00\n";
+        let input =
+            "exchange,symbol,quantity,average_price,invested_amount\nNSE,DEMOETF,3,100.00,300.00\n";
         let holdings = parse_holdings_csv(input.as_bytes()).unwrap();
         let trades =
             opening_holdings_to_trades(&holdings, "2026-11-08T00:00:00Z", "batch-a").unwrap();
