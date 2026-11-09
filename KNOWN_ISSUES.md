@@ -1,39 +1,41 @@
-# Known issues — v1.0 RC1
+# Known issues — v1.0 RC2
 
-## Native Windows qualification is not executed in this runner
+## RC2 requires fresh qualification
 
-This environment is Linux, not Windows. Actual tray visibility/right-click behavior, native WebView lifecycle, Windows sign-out/shutdown behavior, notifications, startup registration across a real login, sleep/hibernate/resume, installer/uninstaller and real Windows resource measurements are therefore **not claimed as passed**. The project includes automated Windows qualification scripts to run those checks on the target environment.
+RC2 changes the market-data provider path, dashboard fallback behavior, overview history wiring, diagnostics and release packaging. RC1 qualification results must not be used to certify this source state.
 
-## Rust compile gate unavailable here
+Run `START_HERE.cmd` on the target Windows machine before release. Installed-app qualification remains a separate explicit gate.
 
-`cargo`/`rustc` are not installed in this runner, and outbound package-host DNS is unavailable, so Rust compile/test/rustfmt/clippy could not be executed here. The Windows qualification script treats these as mandatory gates and requires Rust >=1.90, matching current Tauri/plugin MSRV requirements.
+## Upstox credential is external to app settings
 
-## Svelte/Vite production bundle unavailable here
+Official Upstox snapshots require `STOCKWATCH_UPSTOX_TOKEN` to exist in the process environment before StockWatch starts.
 
-`node_modules` is absent. `npm install` timed out because this runner cannot resolve the package registry, so the complete production Svelte/Vite bundle could not be executed. Dependency-free TypeScript checks pass.
+The token is intentionally not stored in SQLite or settings JSON and is never returned to the frontend. A future release may add Windows Credential Manager integration for easier setup.
 
-## Last-window exit guard needs real shutdown/logoff validation
+If the token is absent, Automatic provider mode uses Yahoo delayed rather than failing startup.
 
-StockWatch intentionally prevents a code-less Tauri `ExitRequested` event after the last WebView closes so the tray backend stays alive. Explicit tray `Exit` uses `app.exit(0)` and remains allowed. A real Windows sign-out/shutdown must be checked to ensure this guard does not obstruct session termination.
+## Upstox mode is REST polling, not WebSocket streaming
 
-## Public market feed is delayed/best-effort
+RC2 uses Instrument Search plus Full Market Quote REST snapshots. These are exchange-backed snapshots but are classified `fresh`, not `live`.
 
-The built-in public provider is deliberately labeled delayed. It is not an exchange-authorized real-time NSE/BSE feed and can have symbol gaps. Provider-symbol overrides are supported.
+A future WebSocket adapter may use `live` freshness after its own native qualification.
+
+## Public fallback is delayed/best-effort
+
+Yahoo remains a fallback and is deliberately labeled `delayed`. It can have symbol gaps or provider-side outages. A fallback quote never inherits the Upstox source label.
 
 ## Market-hours calendar is approximate
 
-Normal NSE weekday hours are modeled, but exchange holidays and special sessions are not yet driven by an authoritative holiday calendar.
+Normal NSE weekday hours are modeled locally. Exchange holidays and special sessions are not yet driven by an authoritative holiday calendar.
 
-## Package lock not generated in this environment
+## Last-window exit guard still needs shutdown/logoff regression coverage
 
-Because npm registry access is unavailable here, this source checkpoint does not include a freshly generated `package-lock.json`. The Windows build step will resolve dependencies unless a lockfile is created first in a networked environment.
+StockWatch prevents a code-less Tauri `ExitRequested` event after the last WebView closes so the tray backend stays alive. Explicit tray Exit remains allowed. Windows shutdown/logoff behavior must remain part of native qualification.
 
-## Automated test-pack limitations
+## Visual Windows toast verification
 
-- The PowerShell harness has been source/structure checked here but **has not been executed on a Windows host in this environment**. `START_HERE.cmd` is the next real validation gate.
-- Installed notification qualification can verify the Tauri/Windows notification API returns success, but visual toast rendering/branding is not claimed from Linux-side checks.
-- `DIAG_SLEEP_RESUME.ps1` is intentionally excluded from automatic diagnostics because it can suspend the machine; it requires explicit `-AllowSuspend` authorization.
-- Package installation/build still depends on npm/crates network access when dependencies are not already cached.
+The notification API can be tested automatically, but actual visual toast rendering/branding must not be claimed unless it is observed or captured in the installed-app context.
 
-## Windows qualification completed
-Safe and installed-app qualification were executed on Windows. Safe qualification: PASS. Installed-app qualification: PASS. Native toast visual rendering remains UNVERIFIED_AUTOMATICALLY; optional sleep/resume remains explicit opt-in.
+## Sleep/resume test is opt-in
+
+`DIAG_SLEEP_RESUME.ps1` remains excluded from automatic diagnostics because it can suspend the machine. It requires explicit `-AllowSuspend` authorization.
