@@ -3,10 +3,20 @@
   import { ageLabel } from "../lib/format";
   export let snapshot: DashboardSnapshot;
   export let onRefresh: () => void;
-  $: provider = snapshot.providerId ? snapshot.providerId.replaceAll("_", " ").toUpperCase() : "NO PROVIDER";
+
+  $: quoteSources = [...new Set(
+    snapshot.holdings
+      .map((holding) => holding.quoteSource)
+      .filter((source): source is string => Boolean(source))
+  )];
+  $: sourceLabel = quoteSources.length > 0
+    ? quoteSources.map((source) => source.replaceAll("_", " ").toUpperCase()).join(" + ")
+    : snapshot.providerId
+      ? snapshot.providerId.replaceAll("_", " ").toUpperCase()
+      : "NO PROVIDER";
   $: feedLabel = snapshot.holdings.length === 0 && snapshot.lastRefreshUnixMs === null
     ? "NO PORTFOLIO DATA"
-    : `${provider} · ${snapshot.marketSession.toUpperCase()} · ${ageLabel(snapshot.lastRefreshUnixMs)}`;
+    : `${sourceLabel} · ${snapshot.marketSession.toUpperCase()} · ${ageLabel(snapshot.lastRefreshUnixMs)}`;
 </script>
 <header class="topbar">
   <div><div class="eyebrow">PORTFOLIO CONTROL CENTER</div><h1>StockWatch Local</h1></div>
