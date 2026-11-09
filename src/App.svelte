@@ -10,13 +10,13 @@
   import AlertsView from "./views/AlertsView.svelte";
   import AnalyticsView from "./views/AnalyticsView.svelte";
   import SettingsView from "./views/SettingsView.svelte";
-  import { demoSnapshot } from "./lib/demo";
+  import { emptySnapshot } from "./lib/empty";
   import { loadDashboardSnapshot, requestRefresh } from "./lib/bridge";
   import { parseRoute, type Route } from "./lib/routing";
   import type { DashboardSnapshot } from "./lib/models";
 
   let route: Route = typeof window !== "undefined" ? parseRoute() : { kind: "overview" };
-  let snapshot: DashboardSnapshot = demoSnapshot;
+  let snapshot: DashboardSnapshot = emptySnapshot;
   let loading = true;
 
   async function reload() {
@@ -39,7 +39,7 @@
   $: currentNav = route.kind === "holding" ? "holdings" : route.kind;
 </script>
 
-<svelte:head><title>StockWatch Local — Phase 6</title><meta name="theme-color" content="#090b0e" /></svelte:head>
+<svelte:head><title>StockWatch Local</title><meta name="theme-color" content="#090b0e" /></svelte:head>
 
 {#if route.kind === "mini"}
   <div class="mini-root"><MiniMode {snapshot} /></div>
@@ -64,7 +64,7 @@
       {:else if route.kind === "settings"}
         <SettingsView {snapshot} />
       {/if}
-      <footer class="app-footer">Phase 6 analytics & history · Local-first · No AI · {snapshot.source === "offline_demo" ? "offline demonstration values" : "local database"}</footer>
+      <footer class="app-footer">Local-first · No AI · {snapshot.providerId ? `market data: ${snapshot.providerId.replaceAll("_", " ")}` : "market data not configured"}</footer>
     </main>
   </div>
 {/if}
