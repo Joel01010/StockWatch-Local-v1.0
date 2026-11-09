@@ -1,7 +1,7 @@
 {
   "name": "stockwatch-local",
   "private": true,
-  "version": "1.0.0-rc.1",
+  "version": "1.0.0-rc.2",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -22,11 +22,11 @@
     "check:phase5": "node tools/phase5-check.mjs",
     "check:db5": "python3 tools/phase5-db-check.py",
     "test:alerts": "node --test tests/alerts_reference.test.mjs",
-    "check:tscore": "tsc --noEmit --strict --target ES2022 --module ESNext --moduleResolution bundler src/lib/models.ts src/lib/demo.ts src/lib/format.ts src/lib/routing.ts",
+    "check:tscore": "tsc --noEmit --strict --target ES2022 --module ESNext --moduleResolution bundler src/lib/models.ts src/lib/demo.ts src/lib/empty.ts src/lib/format.ts src/lib/routing.ts",
     "check:phase6": "node tools/phase6-check.mjs",
     "check:db6": "python3 tools/phase6-db-check.py",
     "test:analytics": "node --test tests/analytics_reference.test.mjs",
-    "check:tsbridge": "tsc --noEmit --strict --target ES2022 --module ESNext --moduleResolution bundler tools/tauri-shim.d.ts src/lib/models.ts src/lib/demo.ts src/lib/format.ts src/lib/routing.ts src/lib/bridge.ts",
+    "check:tsbridge": "tsc --noEmit --strict --target ES2022 --module ESNext --moduleResolution bundler tools/tauri-shim.d.ts src/lib/models.ts src/lib/demo.ts src/lib/empty.ts src/lib/format.ts src/lib/routing.ts src/lib/bridge.ts",
     "check:phase7": "node tools/phase7-check.mjs",
     "check:db7": "python3 tools/phase7-db-check.py",
     "test:reliability": "node --test tests/reliability_reference.test.mjs",
