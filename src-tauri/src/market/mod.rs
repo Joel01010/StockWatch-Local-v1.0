@@ -1,13 +1,17 @@
+mod fallback;
 mod freshness;
 mod model;
 mod provider;
 mod service;
+mod upstox;
 mod yahoo;
 
+pub use fallback::FallbackMarketDataProvider;
 pub use freshness::FreshnessPolicy;
 pub use model::{MarketInstrument, Quote, QuoteFreshness, RefreshReport};
 pub use provider::MarketDataProvider;
 pub use service::{spawn_market_worker, MarketDataService};
+pub use upstox::{UpstoxAnalyticsProvider, UPSTOX_TOKEN_ENV};
 pub use yahoo::YahooDelayedProvider;
 
 #[derive(Debug, thiserror::Error)]
