@@ -416,12 +416,42 @@ impl PortfolioRepository {
                 |row| row.get(0),
             )
             .optional()?;
-        match json {
+
+        let mut settings = match json {
             Some(value) => serde_json::from_str::<AppSettings>(&value)
                 .map(|v| v.normalized())
-                .map_err(|e| StorageError::InvalidJson(e.to_string())),
-            None => Ok(AppSettings::default()),
+                .map_err(|e| StorageError::InvalidJson(e.to_string()))?,
+            None => AppSettings::default(),
+        };
+
+        // RC1 exposed only Yahoo in the provider selector, so an existing persisted
+        // "yahoo_delayed" value is a legacy default rather than a meaningful opt-out.
+        // Migrate that value to RC2 automatic selection once, then record the migration.
+        // After the marker exists, a user can deliberately choose Yahoo-only and it is kept.
+        let migration_key = "market_provider_auto_migrated_rc2";
+        let already_migrated: bool = self
+            .connection
+            .query_row(
+                "SELECT EXISTS(SELECT 1 FROM settings WHERE key=?1)",
+                params![migration_key],
+                |row| row.get(0),
+            )?;
+
+        if !already_migrated {
+            if settings.market_data.provider == "yahoo_delayed" {
+                settings.market_data.provider = "auto".into();
+                self.save_app_settings(&settings)?;
+            }
+            let now = OffsetDateTime::now_utc()
+                .format(&Rfc3339)
+                .unwrap_or_default();
+            self.connection.execute(
+                "INSERT OR REPLACE INTO settings(key,value_json,updated_at) VALUES(?1,'true',?2)",
+                params![migration_key, now],
+            )?;
         }
+
+        Ok(settings.normalized())
     }
 
     pub fn save_app_settings(&self, settings: &AppSettings) -> Result<(), StorageError> {
@@ -1118,6 +1148,29 @@ mod tests {
             executed_at: "2026-11-08T10:00:00Z".into(),
             external_ref: Some(external_ref.into()),
         }
+    }
+
+    #[test]
+    fn legacy_yahoo_setting_migrates_to_auto_once() {
+        let repo = PortfolioRepository::in_memory().unwrap();
+        let mut legacy = AppSettings::default();
+        legacy.market_data.provider = "yahoo_delayed".into();
+        let json = serde_json::to_string(&legacy).unwrap();
+        repo.connection
+            .execute(
+                "INSERT OR REPLACE INTO settings(key,value_json,updated_at) VALUES('app_settings',?1,'2026-11-09T00:00:00Z')",
+                params![json],
+            )
+            .unwrap();
+
+        let migrated = repo.load_app_settings().unwrap();
+        assert_eq!(migrated.market_data.provider, "auto");
+
+        let mut explicit_yahoo = migrated;
+        explicit_yahoo.market_data.provider = "yahoo_delayed".into();
+        repo.save_app_settings(&explicit_yahoo).unwrap();
+        let reloaded = repo.load_app_settings().unwrap();
+        assert_eq!(reloaded.market_data.provider, "yahoo_delayed");
     }
 
     #[test]
