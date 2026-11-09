@@ -18,9 +18,9 @@ const required = [
 for (const file of required) {
   if (!fs.existsSync(path.join(root,file))) throw new Error(`Missing Phase 8 artifact: ${file}`);
 }
-if (pkg.version !== '1.0.0-rc.1') throw new Error('package version mismatch');
-if (tauri.version !== '1.0.0-rc.1') throw new Error('tauri version mismatch');
-if (!cargo.includes('version = "1.0.0-rc.1"')) throw new Error('cargo version mismatch');
+if (pkg.version !== '1.0.0-rc.2') throw new Error('package version mismatch');
+if (tauri.version !== '1.0.0-rc.2') throw new Error('tauri version mismatch');
+if (!cargo.includes('version = "1.0.0-rc.2"')) throw new Error('cargo version mismatch');
 if (!cargo.includes('tauri-plugin-autostart = "2"')) throw new Error('native autostart plugin missing');
 if (!lib.includes('tauri_plugin_autostart::init')) throw new Error('autostart plugin not initialized');
 if (!commands.includes('app.autolaunch()')) throw new Error('settings do not apply native autostart');
