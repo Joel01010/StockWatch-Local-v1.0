@@ -1,0 +1,108 @@
+name: RC2 Quality
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rc2-quality-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  reference-and-frontend:
+    name: Reference, DB and frontend checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Run reference tests
+        run: npm test
+
+      - name: Run phase source checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run check:phase0
+          npm run check:phase1
+          npm run check:phase2
+          npm run check:phase3
+          npm run check:phase4
+          npm run check:phase5
+          npm run check:phase6
+          npm run check:phase7
+          npm run check:phase8
+          npm run check:harness
+
+      - name: Run SQLite and soak checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run check:db
+          npm run check:db4
+          npm run check:db5
+          npm run check:db6
+          npm run check:db7
+          npm run soak:phase7
+
+      - name: TypeScript checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run check:tscore
+          npm run check:tsbridge
+
+      - name: Frontend production build
+        run: npm run build
+
+  rust:
+    name: Rust fmt, clippy and tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Tauri Linux build dependencies
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y             libwebkit2gtk-4.1-dev             libappindicator3-dev             librsvg2-dev             patchelf
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Cache Rust build
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - name: rustfmt
+        run: cargo fmt --manifest-path src-tauri/Cargo.toml --all -- --check
+
+      - name: clippy
+        run: cargo clippy --manifest-path src-tauri/Cargo.toml --all-targets -- -D warnings
+
+      - name: Rust tests
+        run: cargo test --manifest-path src-tauri/Cargo.toml
