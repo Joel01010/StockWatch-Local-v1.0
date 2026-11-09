@@ -28,6 +28,7 @@ pub struct MarketDataService {
     runtime: RuntimeState,
     settings: MarketDataSettings,
     provider: Arc<dyn MarketDataProvider>,
+    symbol_provider_id: &'static str,
     logger: Option<EventLogger>,
 }
 
@@ -38,33 +39,42 @@ impl MarketDataService {
         settings: MarketDataSettings,
     ) -> Result<Self, MarketDataError> {
         let settings = settings.normalized();
-        let provider: Arc<dyn MarketDataProvider> = match settings.provider.as_str() {
-            "auto" => {
-                let yahoo: Arc<dyn MarketDataProvider> =
-                    Arc::new(YahooDelayedProvider::new(settings.request_timeout_seconds)?);
-                if UpstoxAnalyticsProvider::token_configured() {
-                    let upstox: Arc<dyn MarketDataProvider> =
-                        Arc::new(UpstoxAnalyticsProvider::from_env(
-                            settings.request_timeout_seconds,
-                        )?);
-                    Arc::new(FallbackMarketDataProvider::new(upstox, yahoo))
-                } else {
-                    yahoo
+        let (provider, symbol_provider_id): (Arc<dyn MarketDataProvider>, &'static str) =
+            match settings.provider.as_str() {
+                "auto" => {
+                    let yahoo: Arc<dyn MarketDataProvider> =
+                        Arc::new(YahooDelayedProvider::new(settings.request_timeout_seconds)?);
+                    if UpstoxAnalyticsProvider::token_configured() {
+                        let upstox: Arc<dyn MarketDataProvider> =
+                            Arc::new(UpstoxAnalyticsProvider::from_env(
+                                settings.request_timeout_seconds,
+                            )?);
+                        (
+                            Arc::new(FallbackMarketDataProvider::new(upstox, yahoo)),
+                            "upstox_analytics",
+                        )
+                    } else {
+                        (yahoo, "yahoo_delayed")
+                    }
                 }
-            }
-            "upstox_analytics" => Arc::new(UpstoxAnalyticsProvider::from_env(
-                settings.request_timeout_seconds,
-            )?),
-            "yahoo_delayed" => {
-                Arc::new(YahooDelayedProvider::new(settings.request_timeout_seconds)?)
-            }
-            other => return Err(MarketDataError::ProviderNotConfigured(other.to_string())),
-        };
+                "upstox_analytics" => (
+                    Arc::new(UpstoxAnalyticsProvider::from_env(
+                        settings.request_timeout_seconds,
+                    )?),
+                    "upstox_analytics",
+                ),
+                "yahoo_delayed" => (
+                    Arc::new(YahooDelayedProvider::new(settings.request_timeout_seconds)?),
+                    "yahoo_delayed",
+                ),
+                other => return Err(MarketDataError::ProviderNotConfigured(other.to_string())),
+            };
         Ok(Self {
             db_path,
             runtime,
             settings,
             provider,
+            symbol_provider_id,
             logger: None,
         })
     }
@@ -108,7 +118,7 @@ impl MarketDataService {
         let targets = {
             let repo = PortfolioRepository::open(&self.db_path)
                 .map_err(|error| MarketDataError::Storage(error.to_string()))?;
-            repo.quote_targets(self.provider_id())
+            repo.quote_targets(self.symbol_provider_id)
                 .map_err(|error| MarketDataError::Storage(error.to_string()))?
         };
 
