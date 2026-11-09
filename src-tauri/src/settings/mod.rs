@@ -9,7 +9,7 @@ fn default_max_tray_symbols() -> usize {
     8
 }
 fn default_provider() -> String {
-    "yahoo_delayed".into()
+    "auto".into()
 }
 fn default_timeout() -> u64 {
     8
@@ -319,8 +319,8 @@ mod tests {
         settings.tray_symbols = vec![
             " demotech ".into(),
             "DEMOTECH".into(),
-            "goldbees".into(),
-            "niftycase".into(),
+            "demoetf".into(),
+            "demobank".into(),
         ];
         assert_eq!(settings.effective_tray_symbols(), vec!["DEMOTECH", "DEMOETF"]);
     }
