@@ -86,3 +86,8 @@ START_FULL_WINDOWS_TEST.cmd
 This adds the NSIS install/installed notification API gate. It refuses to overwrite an existing StockWatch installation and cleans up its own test installation by default.
 
 Do not call this build final `v1.0` until the Windows qualification report is green and the remaining native-only checks in `docs/WINDOWS_QUALIFICATION.md` are resolved.
+
+
+## Privacy of example data
+
+All bundled portfolio examples, demo holdings, test fixtures, and diagnostic symbols are synthetic or generic public-market examples. The repository does not intentionally include a user's brokerage account data, local database, support bundle, API credentials, or machine-specific qualification artifacts.
