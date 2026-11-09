@@ -10,6 +10,7 @@
   <div class="holding-row header-row">
     <span>Instrument</span><span>Qty</span><span>Avg.</span><span>LTP</span><span>Today</span><span>Total P&amp;L</span><span>Allocation</span>
   </div>
+  {#if holdings.length === 0}<div class="empty-row">No holdings imported yet. Import your portfolio before market values can be calculated.</div>{/if}
   {#each holdings as holding}
     <button class="holding-row data-row" on:click={() => navigate(`holding/${holding.symbol}`)} aria-label={`Open ${holding.symbol}`}>
       <span class="instrument-cell"><strong>{holding.symbol}</strong><small>{holding.exchange} · {holding.name ?? "Instrument"}</small></span>
