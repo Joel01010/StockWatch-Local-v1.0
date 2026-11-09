@@ -1,34 +1,24 @@
-﻿# v1.0 RC1 + automated test-pack results
+# StockWatch Local v1.0 RC2 test status
 
-| Gate | Result |
+RC2 changes the market-data provider path and dashboard fallback/history behavior. The previous RC1 Windows qualification remains useful historical evidence, but it does **not** certify RC2.
+
+| Gate | RC2 status |
 |---|---|
-| Full Node/reference/regression suite | **PASS â€” 62/62** |
-| Test harness structure/safety check | **PASS â€” 23 required artifacts** |
-| Qualification-mode autostart isolation regression | PASS |
-| Phase 0 source check | PASS |
-| Phase 1 source check | PASS |
-| Phase 2 source check | PASS |
-| Phase 3 source check | PASS |
-| Phase 4 source check | PASS |
-| Phase 5 source check | PASS |
-| Phase 6 source check | PASS |
-| Phase 7 source check | PASS |
-| Phase 8 release/source check | PASS |
-| Phase 1 SQLite check | PASS |
-| Phase 4 SQLite check | PASS |
-| Phase 5 SQLite check | PASS |
-| Phase 6 SQLite check | PASS |
-| Phase 7/schema v6 + backup/restore check | PASS |
-| TypeScript core | PASS |
-| TypeScript Tauri bridge | PASS |
-| 25,000-cycle simulated refresh soak | PASS |
-| Rust/Cargo compile/test/fmt/clippy | **PASS** |
-| Svelte/Vite production bundle | **PASS** |
-| PowerShell harness execution on Windows | **PASS** |
-| Windows Tauri/NSIS build | **PASS** |
-| Native Windows qualification | **PASS** |
+| Source/provider implementation review | Implemented |
+| Upstox adapter unit tests | Added; execution pending Windows/Rust qualification |
+| Node/reference regression suite | **PENDING rerun** |
+| Phase 0–8 structural/source checks | **PENDING rerun** |
+| SQLite/schema checks | **PENDING rerun** |
+| TypeScript core + Tauri bridge | **PENDING rerun** |
+| Rust cargo test/fmt/clippy | **PENDING rerun** |
+| Svelte/Vite production build | **PENDING rerun** |
+| Yahoo fallback network diagnostic | **PENDING rerun** |
+| Upstox authenticated market-data diagnostic | **PENDING token-configured run** |
+| Windows Tauri/NSIS build | **PENDING rerun** |
+| Native tray/dashboard/mini lifecycle | **PENDING rerun** |
+| Installed-app qualification | **PENDING rerun** |
+| Visual Windows toast verification | **PENDING** |
 
-The Windows harness converts the currently unrun gates into explicit PASS/FAIL checks on the target Windows machine. No native Windows behavior is inferred from these Linux results.
+Use `START_HERE.cmd` for the safe RC2 qualification. If installed-app testing is explicitly desired, use `START_FULL_WINDOWS_TEST.cmd`.
 
-The safe normal entry point is `START_HERE.cmd`. It runs all safe focused diagnostics automatically and produces one `SUPPORT_BUNDLE_*.zip` for return.
-
+A release must not be called final v1.0 until the RC2 gates are rerun and recorded.
