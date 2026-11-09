@@ -322,7 +322,10 @@ mod tests {
             "demoetf".into(),
             "demobank".into(),
         ];
-        assert_eq!(settings.effective_tray_symbols(), vec!["DEMOTECH", "DEMOETF"]);
+        assert_eq!(
+            settings.effective_tray_symbols(),
+            vec!["DEMOTECH", "DEMOETF"]
+        );
     }
     #[test]
     fn destroy_to_tray_is_default_close_policy() {
