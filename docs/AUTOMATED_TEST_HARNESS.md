@@ -48,7 +48,7 @@ The safe master runner automatically captures:
 
 - toolchain / Visual Studio / SDK state;
 - DNS, TLS, proxy and package-registry connectivity;
-- Yahoo delayed-market endpoint reachability;
+- Yahoo fallback reachability and an optional authenticated Upstox market-data probe;
 - WebView2 presence;
 - npm/Cargo build diagnostics;
 - process startup/crash evidence;
