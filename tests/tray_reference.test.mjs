@@ -42,7 +42,7 @@ function menu(snapshot, settings) {
 }
 
 const settings = {
-  traySymbols: [' demotech ', 'DEMOTECH', 'goldbees', 'niftycase'],
+  traySymbols: [' demotech ', 'DEMOTECH', 'demoetf', 'demobank'],
   tray: { maxSymbols: 2 }
 };
 const snapshot = { refreshInFlight:false, holdings:[{symbol:'DEMOTECH'},{symbol:'DEMOETF'},{symbol:'DEMOBANK'}] };
