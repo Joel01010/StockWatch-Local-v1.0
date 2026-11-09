@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.0.0-rc.2 — Market-data truthfulness and official-source update
+
+- Added an Upstox Analytics Token market-data adapter using Instrument Search plus Full Market Quote snapshots.
+- Added automatic provider selection: Upstox official snapshots first when `STOCKWATCH_UPSTOX_TOKEN` is configured, Yahoo delayed as explicit fallback.
+- Preserved per-quote source provenance so fallback quotes are never mislabeled as Upstox.
+- Classified Upstox REST polling as `fresh` rather than `live`; streaming/WebSocket is not claimed.
+- Removed automatic demo-portfolio substitution when the local database is empty or unavailable.
+- Replaced the fabricated overview performance curve with persisted local analytics history.
+- Removed stale Phase 6 product labels from the application shell.
+- Added safe UI reporting for whether an Upstox token is configured without exposing the credential value.
+- Added optional Upstox market-data diagnostics that never log the token.
+- Hardened source checks against reintroducing fabricated dashboard values or Yahoo-only defaults.
+- Fixed Windows packaging after public-repo sanitization and made package names derive from the Tauri version.
+- RC2 requires a fresh Windows/Rust/frontend qualification run; RC1 PASS evidence is historical and does not certify RC2.
+
 ## 1.0.0-rc.1 — Windows Release Candidate
 
 - Added native Tauri autostart plugin integration and Settings synchronization.
