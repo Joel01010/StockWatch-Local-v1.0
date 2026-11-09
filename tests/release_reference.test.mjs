@@ -8,9 +8,9 @@ const conf = JSON.parse(fs.readFileSync('src-tauri/tauri.conf.json','utf8'));
 const pkg = JSON.parse(fs.readFileSync('package.json','utf8'));
 
 test('release versions are synchronized', () => {
-  assert.equal(pkg.version, '1.0.0-rc.1');
+  assert.equal(pkg.version, '1.0.0-rc.2');
   assert.equal(conf.version, pkg.version);
-  assert.match(cargo, /version = "1\.0\.0-rc\.1"/);
+  assert.match(cargo, /version = "1\.0\.0-rc\.2"/);
 });
 
 test('normal window close keeps the tray process alive but explicit coded exit is allowed', () => {
