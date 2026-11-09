@@ -1140,7 +1140,11 @@ mod tests {
     fn trade(external_ref: &str, side: Side, quantity: &str, price: &str) -> Trade {
         Trade {
             id: None,
-            instrument: InstrumentRef::normalized("NSE", "DEMOTECH", Some("Demo Technology".into())),
+            instrument: InstrumentRef::normalized(
+                "NSE",
+                "DEMOTECH",
+                Some("Demo Technology".into()),
+            ),
             side,
             quantity: d(quantity),
             price: d(price),
