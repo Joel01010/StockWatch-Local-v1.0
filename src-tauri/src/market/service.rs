@@ -45,10 +45,9 @@ impl MarketDataService {
                     let yahoo: Arc<dyn MarketDataProvider> =
                         Arc::new(YahooDelayedProvider::new(settings.request_timeout_seconds)?);
                     if UpstoxAnalyticsProvider::token_configured() {
-                        let upstox: Arc<dyn MarketDataProvider> =
-                            Arc::new(UpstoxAnalyticsProvider::from_env(
-                                settings.request_timeout_seconds,
-                            )?);
+                        let upstox: Arc<dyn MarketDataProvider> = Arc::new(
+                            UpstoxAnalyticsProvider::from_env(settings.request_timeout_seconds)?,
+                        );
                         (
                             Arc::new(FallbackMarketDataProvider::new(upstox, yahoo)),
                             "upstox_analytics",
