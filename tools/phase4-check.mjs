@@ -44,7 +44,7 @@ if (!storage.includes('market_provider_state')) failures.push('provider health p
 if (!commands.includes('MarketDataService') || !commands.includes('request_refresh') || !commands.includes('upstox_token_configured')) failures.push('market commands are not connected');
 if (!app.includes('MarketMonitor')) failures.push('market monitor UI route missing');
 if (!lib.includes('spawn_market_worker') || !lib.includes('refresh_on_startup')) failures.push('background market worker/startup refresh missing');
-if (bridge.includes('return demoSnapshot') || bridge.includes('snapshot.holdings.length === 0) return demoSnapshot') failures.push('dashboard bridge must not substitute fake portfolio data');
+if (bridge.includes('return demoSnapshot') || bridge.includes('snapshot.holdings.length === 0) return demoSnapshot')) failures.push('dashboard bridge must not substitute fake portfolio data');
 if (overview.includes('demoChart')) failures.push('overview must not use fabricated performance data');
 if (failures.length) {
   console.error(`Phase 4 structural check FAILED (${failures.length})`);
