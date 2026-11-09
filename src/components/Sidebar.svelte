@@ -15,5 +15,5 @@
       </button>
     {/each}
   </nav>
-  <div class="sidebar-foot"><span class="phase-dot"></span><div><b>Phase 6</b><small>Analytics & history</small></div></div>
+  <div class="sidebar-foot"><span class="phase-dot"></span><div><b>Local-first</b><small>Tray portfolio monitor</small></div></div>
 </aside>
