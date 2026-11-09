@@ -1,14 +1,12 @@
 import type { DashboardSnapshot } from "./models";
-import { demoSnapshot } from "./demo";
+import { emptySnapshot } from "./empty";
 
 export async function loadDashboardSnapshot(): Promise<DashboardSnapshot> {
   try {
     const { invoke } = await import("@tauri-apps/api/core");
-    const snapshot = await invoke<DashboardSnapshot>("dashboard_snapshot");
-    if (snapshot.holdings.length === 0) return demoSnapshot;
-    return snapshot;
-  } catch {
-    return demoSnapshot;
+    return await invoke<DashboardSnapshot>("dashboard_snapshot");
+  } catch (error) {
+    return { ...emptySnapshot, lastRefreshError: `Dashboard data unavailable: ${String(error)}` };
   }
 }
 
@@ -22,6 +20,15 @@ export async function requestRefresh(): Promise<boolean> {
 }
 
 import type { AlertEventRecord, AlertRule, AppSettings, SettingsSaveResult } from "./models";
+
+export async function loadUpstoxTokenConfigured(): Promise<boolean> {
+  try {
+    const { invoke } = await import("@tauri-apps/api/core");
+    return await invoke<boolean>("upstox_token_configured");
+  } catch {
+    return false;
+  }
+}
 
 export async function loadSettings(): Promise<AppSettings | null> {
   try { const { invoke } = await import("@tauri-apps/api/core"); return await invoke<AppSettings>("get_settings"); } catch { return null; }
