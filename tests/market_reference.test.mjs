@@ -104,3 +104,29 @@ test('provider provenance survives cache merge', () => {
   const merged = mergePartialCache([], [quote]);
   assert.deepEqual(merged[0], quote);
 });
+
+function automaticProvider(tokenPresent) {
+  return tokenPresent ? 'upstox_yahoo_fallback' : 'yahoo_delayed';
+}
+
+test('automatic provider prefers official Upstox only when a token is configured', () => {
+  assert.equal(automaticProvider(true), 'upstox_yahoo_fallback');
+  assert.equal(automaticProvider(false), 'yahoo_delayed');
+});
+
+test('official REST snapshots are fresh while Yahoo fallback remains delayed', () => {
+  assert.equal(classifyFreshness('fresh', 5), 'fresh');
+  assert.equal(classifyFreshness('delayed', 5), 'delayed');
+  assert.equal(classifyFreshness('fresh', 301), 'stale');
+});
+
+test('mixed refresh provenance is preserved per instrument', () => {
+  const cache = [];
+  const received = [
+    {exchange:'NSE',symbol:'AAA',price:100,source:'upstox_analytics'},
+    {exchange:'NSE',symbol:'BBB',price:200,source:'yahoo_delayed'},
+  ];
+  const merged = mergePartialCache(cache, received);
+  assert.equal(merged.find(q=>q.symbol==='AAA').source, 'upstox_analytics');
+  assert.equal(merged.find(q=>q.symbol==='BBB').source, 'yahoo_delayed');
+});
