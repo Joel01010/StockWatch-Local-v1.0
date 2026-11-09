@@ -180,8 +180,7 @@ impl MarketDataProvider for UpstoxAnalyticsProvider {
 
         for (instrument, key) in resolved {
             let row = payload.data.values().find(|row| {
-                row.instrument_token == key
-                    || row.symbol.eq_ignore_ascii_case(&instrument.symbol)
+                row.instrument_token == key || row.symbol.eq_ignore_ascii_case(&instrument.symbol)
             });
             let Some(row) = row else {
                 continue;
