@@ -429,13 +429,11 @@ impl PortfolioRepository {
         // Migrate that value to RC2 automatic selection once, then record the migration.
         // After the marker exists, a user can deliberately choose Yahoo-only and it is kept.
         let migration_key = "market_provider_auto_migrated_rc2";
-        let already_migrated: bool = self
-            .connection
-            .query_row(
-                "SELECT EXISTS(SELECT 1 FROM settings WHERE key=?1)",
-                params![migration_key],
-                |row| row.get(0),
-            )?;
+        let already_migrated: bool = self.connection.query_row(
+            "SELECT EXISTS(SELECT 1 FROM settings WHERE key=?1)",
+            params![migration_key],
+            |row| row.get(0),
+        )?;
 
         if !already_migrated {
             if settings.market_data.provider == "yahoo_delayed" {
