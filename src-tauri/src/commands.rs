@@ -293,6 +293,11 @@ pub fn get_settings(settings: tauri::State<'_, SettingsState>) -> AppSettings {
 }
 
 #[tauri::command]
+pub fn upstox_token_configured() -> bool {
+    crate::market::UpstoxAnalyticsProvider::token_configured()
+}
+
+#[tauri::command]
 pub fn save_settings(
     app: tauri::AppHandle,
     runtime: tauri::State<'_, RuntimeState>,
