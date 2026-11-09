@@ -184,6 +184,7 @@ pub fn run() {
             commands::request_refresh,
             commands::set_market_symbol_override,
             commands::get_settings,
+            commands::upstox_token_configured,
             commands::save_settings,
             commands::list_alerts,
             commands::save_alert,
