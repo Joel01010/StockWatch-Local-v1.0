@@ -53,6 +53,12 @@ impl MarketDataProvider for FallbackMarketDataProvider {
             .iter()
             .filter(|instrument| !received.contains(&instrument.key()))
             .cloned()
+            .map(|mut instrument| {
+                // Provider-symbol overrides belong to the primary provider. Passing an
+                // Upstox instrument_key to Yahoo would produce an invalid fallback ticker.
+                instrument.provider_symbol = None;
+                instrument
+            })
             .collect();
 
         if missing.is_empty() {
