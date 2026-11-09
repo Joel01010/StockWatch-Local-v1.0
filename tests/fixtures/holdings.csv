@@ -1,0 +1,5 @@
+exchange,symbol,name,quantity,average_price,invested_amount
+NSE,DEMOETF,Demo Index ETF,3,100.00,300.00
+NSE,DEMOTECH,Demo Technology,4,200.00,800.01
+NSE,DEMOBANK,Demo Bank Basket,6,150.00,900.00
+NSE,DEMOPHARMA,Demo Pharma Basket,2,250.00,500.00

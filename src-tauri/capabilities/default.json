@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "StockWatch dashboard and quick-view capability",
+  "windows": ["main", "mini"],
+  "permissions": ["core:default"]
+}

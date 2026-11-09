@@ -1,0 +1,33 @@
+[package]
+name = "stockwatch-local"
+version = "1.0.0-rc.1"
+description = "Local-first lightweight stock portfolio monitor"
+authors = ["StockWatch Local contributors"]
+edition = "2021"
+license = "MIT"
+
+[lib]
+name = "stockwatch_local_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["tray-icon"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+rusqlite = { version = "0.32", features = ["bundled"] }
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "time", "sync"] }
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
+time = { version = "0.3", features = ["serde", "parsing", "formatting"] }
+rust_decimal = { version = "1", features = ["serde"] }
+csv = "1"
+async-trait = "0.1"
+urlencoding = "2"
+tauri-plugin-notification = "2"
+tauri-plugin-autostart = "2"
+
+[dev-dependencies]
+tempfile = "3"

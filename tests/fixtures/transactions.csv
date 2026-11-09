@@ -1,0 +1,5 @@
+exchange,symbol,name,side,quantity,price,fees,executed_at,external_ref
+NSE,DEMOTECH,Demo Technology,buy,4,200.00,0.00,2026-11-01T10:00:00Z,demotech-b1
+NSE,DEMOTECH,Demo Technology,buy,1,220.00,0.50,2026-11-02T10:00:00Z,demotech-b2
+NSE,DEMOTECH,Demo Technology,sell,1,230.00,1.00,2026-11-03T10:00:00Z,demotech-s1
+NSE,DEMOETF,Demo Index ETF,buy,3,100.00,0.00,2026-11-01T10:00:00Z,demo-etf-b1

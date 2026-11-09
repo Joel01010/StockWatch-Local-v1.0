@@ -1,0 +1,20 @@
+{
+  "launch_at_startup": false,
+  "close_behavior": "destroy_to_tray",
+  "refresh": {
+    "open_seconds": 30,
+    "closed_seconds": null,
+    "failure_backoff_max_seconds": 300
+  },
+  "tray_symbols": ["DEMOTECH", "DEMOETF", "DEMOBANK", "DEMOPHARMA"],
+  "tray": {
+    "enabled": true,
+    "max_symbols": 8,
+    "show_price": true,
+    "show_change_pct": true,
+    "show_portfolio_value": true,
+    "show_day_pnl": true,
+    "show_total_pnl": true,
+    "left_click_action": "open_dashboard"
+  }
+}

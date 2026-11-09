@@ -1,0 +1,32 @@
+STOCKWATCH LOCAL - INSTRUCTIONS FOR A VERY SMALL/WEAK LOCAL MODEL
+
+DO EXACTLY THIS:
+1. Extract the ZIP to a normal writable folder.
+2. Run START_HERE.cmd from the project root.
+3. Do not edit any file.
+4. Do not run npm, cargo, rustup, winget, registry commands, or individual diagnostics manually.
+5. Wait until START_HERE.cmd exits.
+6. Open the newest qualification-results\AUTO-* folder.
+7. Read RETURN_THIS_FILE.txt.
+8. Return the SUPPORT_BUNDLE_*.zip named in that file.
+
+IF START_HERE.cmd SAYS POWERSHELL 7 IS MISSING:
+- Stop.
+- Report exactly: "PowerShell 7 is missing."
+- Do not attempt to install anything automatically.
+
+IF THE TEST FAILS:
+- Do not try to fix it.
+- Do not choose a diagnostic script.
+- The master script already ran all diagnostics.
+- Return the support ZIP.
+
+ONLY IF THE USER EXPLICITLY ASKS FOR INSTALLER/INSTALLED-APP TESTING:
+- Run START_FULL_WINDOWS_TEST.cmd instead.
+
+NEVER:
+- Delete the StockWatch database.
+- Disable Windows Defender.
+- Change proxy settings.
+- Modify registry values manually.
+- Run the sleep/resume diagnostic unless explicitly told to do so.

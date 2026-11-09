@@ -1,0 +1,28 @@
+import fs from 'node:fs'; import path from 'node:path';
+const root=process.cwd(); const failures=[];
+const required=['src-tauri/src/alerts/service.rs','src-tauri/src/notifications/mod.rs','src-tauri/migrations/0004_alerts_settings.sql','src/views/AlertsView.svelte','src/views/SettingsView.svelte','tests/alerts_reference.test.mjs','tools/phase5-db-check.py','docs/ALERTS_SETTINGS.md'];
+for(const r of required) if(!fs.existsSync(path.join(root,r))) failures.push(`missing ${r}`);
+const alert=fs.readFileSync(path.join(root,'src-tauri/src/alerts/mod.rs'),'utf8');
+const service=fs.readFileSync(path.join(root,'src-tauri/src/alerts/service.rs'),'utf8');
+const repo=fs.readFileSync(path.join(root,'src-tauri/src/storage/repository.rs'),'utf8');
+const market=fs.readFileSync(path.join(root,'src-tauri/src/market/service.rs'),'utf8');
+const capability=JSON.parse(fs.readFileSync(path.join(root,'src-tauri/capabilities/default.json'),'utf8'));
+const settingsUi=fs.readFileSync(path.join(root,'src/views/SettingsView.svelte'),'utf8');
+const alertsUi=fs.readFileSync(path.join(root,'src/views/AlertsView.svelte'),'utf8');
+const lib=fs.readFileSync(path.join(root,'src-tauri/src/lib.rs'),'utf8');
+const commands=fs.readFileSync(path.join(root,'src-tauri/src/commands.rs'),'utf8');
+const cargo=fs.readFileSync(path.join(root,'src-tauri/Cargo.toml'),'utf8');
+const app=fs.readFileSync(path.join(root,'src/App.svelte'),'utf8');
+for(const token of ['RepeatWhileTrue','Crossing','reset_reached','cooldown_elapsed','is_quiet_hours']) if(!alert.includes(token)) failures.push(`alert invariant missing ${token}`);
+for(const token of ['record_alert_event','update_alert_runtime','alert_rule_meta','save_app_settings','load_app_settings','Enabled symbol-based alerts are quote consumers','INSERT INTO instruments(exchange, symbol, name)','last_triggered_at=excluded.last_triggered_at','armed=excluded.armed']) if(!repo.includes(token)) failures.push(`persistence/targeting missing ${token}`);
+if(!cargo.includes('tauri-plugin-notification')) failures.push('notification plugin dependency missing');
+if(!lib.includes('tauri_plugin_notification::init()')||!lib.includes('AlertService')) failures.push('notification/alert service not initialized');
+if(!service.includes('evaluate_all')||!service.includes('notification_error')||!service.includes('quote_usable_for_trade_alerts')||!service.includes('requires_open_holding')||!service.includes('both a symbol and exchange')) failures.push('alert evaluation/delivery/validation/freshness guard missing');
+if((market.match(/alerts\.evaluate_all\(&app\)/g)||[]).length < 3) failures.push('alert evaluation is not covered across cache aging/success/failure paths');
+if(!Array.isArray(capability.windows)||!capability.windows.includes('main')||!capability.windows.includes('mini')) failures.push('main/mini Tauri capability coverage missing');
+for(const token of ['launch_at_startup','offline_after_seconds','failure_backoff_max_seconds','Manage alert rules']) if(!settingsUi.includes(token)) failures.push(`settings UI missing ${token}`);
+for(const token of ['custom symbol','default_cooldown_seconds','marketHoursOnly']) if(!alertsUi.toLowerCase().includes(token.toLowerCase())) failures.push(`alerts UI missing ${token}`);
+for(const cmd of ['get_settings','save_settings','list_alerts','save_alert','delete_alert','alert_history','test_notification']) if(!commands.includes(cmd)) failures.push(`missing command ${cmd}`);
+if(!app.includes('AlertsView')||!app.includes('SettingsView')) failures.push('alerts/settings UI not routed');
+if(failures.length){console.error(`Phase 5 structural check FAILED (${failures.length})`); failures.forEach(f=>console.error(' - '+f)); process.exit(1)}
+console.log(`Phase 5 structural check PASS (${required.length} required artifacts + alert/settings invariants)`);

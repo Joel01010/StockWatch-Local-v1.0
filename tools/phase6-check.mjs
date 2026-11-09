@@ -1,0 +1,26 @@
+import fs from 'node:fs'; import path from 'node:path';
+const root=process.cwd(), failures=[];
+const required=['src-tauri/src/analytics/mod.rs','src-tauri/src/analytics/model.rs','src-tauri/src/analytics/engine.rs','src-tauri/migrations/0005_analytics.sql','src/views/AnalyticsView.svelte','tests/analytics_reference.test.mjs','tools/phase6-db-check.py','docs/ANALYTICS_HISTORY.md'];
+for(const r of required) if(!fs.existsSync(path.join(root,r))) failures.push(`missing ${r}`);
+const storage=fs.readFileSync(path.join(root,'src-tauri/src/storage/repository.rs'),'utf8');
+const market=fs.readFileSync(path.join(root,'src-tauri/src/market/service.rs'),'utf8');
+const commands=fs.readFileSync(path.join(root,'src-tauri/src/commands.rs'),'utf8');
+const engine=fs.readFileSync(path.join(root,'src-tauri/src/analytics/engine.rs'),'utf8');
+const migration=fs.readFileSync(path.join(root,'src-tauri/migrations/0005_analytics.sql'),'utf8');
+const ui=fs.readFileSync(path.join(root,'src/views/AnalyticsView.svelte'),'utf8');
+const app=fs.readFileSync(path.join(root,'src/App.svelte'),'utf8');
+const lib=fs.readFileSync(path.join(root,'src-tauri/src/lib.rs'),'utf8');
+for(const token of ['modified_dietz_return_pct','performance_points','investment_income','net_external_contributions']) if(!engine.includes(token)) failures.push(`analytics engine missing ${token}`);
+for(const token of ['cash_flows','performance_snapshots','performance_holding_snapshots','analytics_preferences']) if(!migration.includes(token)) failures.push(`migration missing ${token}`);
+for(const token of ['upsert_performance_snapshot','performance_snapshots','analytics_benchmark','benchmark_price_range','insert_cash_flow','delete_cash_flow']) if(!storage.includes(token)) failures.push(`repository missing ${token}`);
+for(const token of ['record_performance_snapshot','QuoteFreshness::Delayed']) if(!market.includes(token)) failures.push(`market snapshot safety missing ${token}`);
+if(!storage.includes('300_000')) failures.push('five-minute snapshot bucket constant missing from repository');
+for(const token of ['analytics_snapshot','add_cash_flow','delete_cash_flow','holding_price_history','get_analytics_preferences','save_analytics_preferences']) if(!commands.includes(token)||!lib.includes(`commands::${token}`)) failures.push(`analytics command not registered ${token}`);
+for(const token of ['Cash-flow-adjusted return','Holding contribution','Cash-flow ledger','Benchmark','Methodology']) if(!ui.includes(token)) failures.push(`analytics UI missing ${token}`);
+if(!app.includes('AnalyticsView')) failures.push('analytics route not wired');
+const detail=fs.readFileSync(path.join(root,'src/views/HoldingDetail.svelte'),'utf8');
+if(detail.includes('demoChart')||!detail.includes('loadHoldingPriceHistory')||!storage.includes('quote_history_points')) failures.push('holding detail must use real local quote history, not fabricated series');
+if((commands.match(/pub fn save_alert\(/g)||[]).length!==1) failures.push('save_alert function should appear exactly once');
+if(commands.includes("settings: tauri::State<'_, SettingsState>,\n    app: tauri::AppHandle")) failures.push('duplicate save_alert parameter regression still present');
+if(failures.length){console.error(`Phase 6 structural check FAILED (${failures.length})`); failures.forEach(f=>console.error(' - '+f)); process.exit(1)}
+console.log(`Phase 6 structural check PASS (${required.length} required artifacts + analytics/history invariants)`);

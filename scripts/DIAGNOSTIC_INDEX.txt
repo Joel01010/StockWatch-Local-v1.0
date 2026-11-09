@@ -1,0 +1,18 @@
+DO NOT MAKE A SMALL MODEL CHOOSE FROM THIS LIST.
+RUN START_HERE.cmd. The master runner invokes all safe diagnostics automatically.
+
+Human-only focused diagnostics:
+DIAG_TOOLCHAIN.ps1       Rust/Node/Visual Studio/Windows SDK/PATH
+DIAG_NETWORK.ps1         DNS/TCP443/TLS/proxy/package-host reachability
+DIAG_MARKET_DATA.ps1     Yahoo delayed quote endpoints for configured sample symbols
+DIAG_WEBVIEW2.ps1        WebView2 runtime discovery/process state
+DIAG_BUILD.ps1           cargo metadata/check and frontend build evidence
+DIAG_RUNTIME.ps1         executable startup/crash/event-log evidence
+DIAG_TRAY_WEBVIEW.ps1    tray-only/dashboard/mini lifecycle probes
+DIAG_AUTOSTART.ps1       native autostart enable/disable qualification hook
+DIAG_NOTIFICATIONS.ps1   installed notification readiness / registry evidence
+DIAG_DATABASE.ps1        known StockWatch DB paths, quick_check, backups/recovery files
+DIAG_RESOURCES.ps1       repeated RAM/private/handle/thread/CPU samples
+DIAG_SECURITY.ps1        Defender/Code Integrity evidence relevant to StockWatch
+DIAG_INSTALLER.ps1       NSIS metadata/hash/signature/install records
+DIAG_SLEEP_RESUME.ps1    DANGEROUS/OPT-IN; requires -AllowSuspend
