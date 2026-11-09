@@ -1,13 +1,14 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import type { AppSettings, DashboardSnapshot, ReliabilityStatus } from "../lib/models";
-  import { createBackupNow, loadReliabilityStatus, loadSettings, persistSettings, runMaintenanceNow, sendTestNotification, stageRestoreBackup } from "../lib/bridge";
+  import { createBackupNow, loadReliabilityStatus, loadSettings, loadUpstoxTokenConfigured, persistSettings, runMaintenanceNow, sendTestNotification, stageRestoreBackup } from "../lib/bridge";
   export let snapshot: DashboardSnapshot;
   let settings: AppSettings | null = null;
   let busy = false;
   let message = "";
   let error = "";
   let reliability: ReliabilityStatus | null = null;
+  let upstoxReady = false;
 
   async function save() {
     if (!settings) return;
@@ -39,7 +40,7 @@
     try { await stageRestoreBackup(fileName); message = "Restore staged and verified. Restart StockWatch Local to apply it."; await refreshReliability(); }
     catch (e) { error = String(e); } finally { busy = false; }
   }
-  onMount(async () => { settings = await loadSettings(); await refreshReliability(); });
+  onMount(async () => { settings = await loadSettings(); upstoxReady = await loadUpstoxTokenConfigured(); await refreshReliability(); });
 </script>
 
 <section class="page-title"><div class="eyebrow">CONFIGURATION</div><h2>Settings</h2><p>Background behavior, market refresh, tray content and native notification policy.</p></section>
@@ -64,7 +65,7 @@
   </div></section>
 
   <section class="panel settings-section"><div class="panel-head"><div><h2>Market data</h2><span class="muted">Current provider: {snapshot.providerId ?? settings.market_data.provider}</span></div></div><div class="settings-form settings-grid">
-    <label><span>Provider</span><select bind:value={settings.market_data.provider}><option value="yahoo_delayed">Yahoo delayed / best effort</option></select></label>
+    <label><span>Provider</span><select bind:value={settings.market_data.provider}><option value="auto">Automatic — Upstox official → Yahoo fallback</option><option value="yahoo_delayed">Yahoo delayed only</option></select><small>{upstoxReady ? "Upstox Analytics Token detected. Automatic mode uses official Upstox snapshots first and Yahoo only for missing/failed symbols." : "No Upstox Analytics Token detected. Automatic mode currently uses Yahoo delayed. Set STOCKWATCH_UPSTOX_TOKEN before launching StockWatch to enable the official source."}</small></label>
     <label class="toggle-row"><input type="checkbox" bind:checked={settings.market_data.refresh_on_startup}/><span>Refresh immediately at startup</span></label>
     <label><span>Open-market refresh (seconds)</span><input type="number" min="5" max="3600" bind:value={settings.refresh.open_seconds}/></label>
     <label><span>Closed-market polling</span><select value={settings.refresh.closed_seconds===null?"off":"on"} on:change={(e)=>settings&&(settings.refresh.closed_seconds=(e.currentTarget as HTMLSelectElement).value==="off"?null:(settings.refresh.closed_seconds ?? 900))}><option value="off">Stop polling</option><option value="on">Enabled</option></select></label>
