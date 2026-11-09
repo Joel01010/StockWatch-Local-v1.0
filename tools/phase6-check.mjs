@@ -19,7 +19,9 @@ for(const token of ['analytics_snapshot','add_cash_flow','delete_cash_flow','hol
 for(const token of ['Cash-flow-adjusted return','Holding contribution','Cash-flow ledger','Benchmark','Methodology']) if(!ui.includes(token)) failures.push(`analytics UI missing ${token}`);
 if(!app.includes('AnalyticsView')) failures.push('analytics route not wired');
 const detail=fs.readFileSync(path.join(root,'src/views/HoldingDetail.svelte'),'utf8');
+const overview=fs.readFileSync(path.join(root,'src/views/Overview.svelte'),'utf8');
 if(detail.includes('demoChart')||!detail.includes('loadHoldingPriceHistory')||!storage.includes('quote_history_points')) failures.push('holding detail must use real local quote history, not fabricated series');
+if(overview.includes('demoChart')||!overview.includes('loadAnalyticsSnapshot')) failures.push('overview must use persisted analytics history, not a fabricated chart');
 if((commands.match(/pub fn save_alert\(/g)||[]).length!==1) failures.push('save_alert function should appear exactly once');
 if(commands.includes("settings: tauri::State<'_, SettingsState>,\n    app: tauri::AppHandle")) failures.push('duplicate save_alert parameter regression still present');
 if(failures.length){console.error(`Phase 6 structural check FAILED (${failures.length})`); failures.forEach(f=>console.error(' - '+f)); process.exit(1)}
